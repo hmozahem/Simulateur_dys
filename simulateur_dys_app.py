@@ -32,11 +32,11 @@ def scramble_word(word, keep_first_last=False):
     return word
 
 # Function to scramble text
-def partial_scramble_text(text, scramble_chance=0.5, keep_first_last=False):
+def partial_scramble_text(text, scramble_chance=0.05, keep_first_last=False):
     return ' '.join([scramble_word(word, keep_first_last) if random.random() < scramble_chance else word for word in text.split()])
 
 # Function for static scrambling
-def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble, scramble_chance=0.5, keep_first_last=False):
+def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble, scramble_chance=0.05, keep_first_last=False):
     # Apply letter inversion
     if invert:
         text = invert_letters(text)
@@ -118,22 +118,16 @@ with col2:
 # Control settings
 st.subheader("Réglages")
 
-# Space removal option
-remove_spaces = st.checkbox("Activer la suppression des espaces", value=False)
+# Enable/disable dynamic letter scrambling
+scramble_letters = st.checkbox("Activer le brouillage des lettres (dynamique)", value=False)
 
 # Scramble chance slider
-scramble_chance = st.slider("Pourcentage de mots brouillés", 0.0, 1.0, 0.5)
-
-# Option to keep the first and last letters stable
-keep_first_last = st.checkbox("Garder les premières et dernières lettres stables", value=False)
+scramble_chance = st.slider("Pourcentage de mots brouillés", 0.0, 1.0, 0.05)
 
 # Speed of update
 update_speed = st.slider("Vitesse de mise à jour (en millisecondes)", 500, 3000, 1000)
 
-# Enable/disable dynamic letter scrambling
-scramble_letters = st.checkbox("Activer le brouillage des lettres (dynamique)", value=False)
-
-# Additional dyslexia effects
+# Style options (bold, italic, underline in one line)
 col3, col4, col5 = st.columns(3)
 with col3:
     bold = st.checkbox("Gras (rend le texte en gras)", value=False)
@@ -145,7 +139,7 @@ with col5:
 # Font style option
 font_choice = st.selectbox("Choisir la police (affecte le style de police du texte transformé)", ["Arial", "Baskerville"])
 
-# Dyslexia effects options
+# Additional dyslexia effects
 col6, col7, col8, col9 = st.columns(4)
 with col6:
     invert_letters_option = st.checkbox("Inverser lettres (b ↔ d, p ↔ q)", value=False)
@@ -171,24 +165,20 @@ if italic:
 if underline:
     style += "text-decoration: underline;"
 
-# Static scrambling by default
+# Static scrambling by default on any input or option change
 if user_input:
-    scrambled_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, False, scramble_chance, keep_first_last)
+    scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance, keep_first_last=keep_first_last)
 
     # Wrap each letter in a span to apply transition effects
     animated_text = ''.join([f"<span>{char}</span>" for char in scrambled_text])
 
-    if scramble_letters:
-        # Add class for dynamic animation
-        text_placeholder.markdown(f"<div class='text-box'><div class='scrambled-text'>{animated_text}</div></div>", unsafe_allow_html=True)
-    else:
-        # Static scrambled text without animation
-        text_placeholder.markdown(f"<div class='text-box'>{animated_text}</div>", unsafe_allow_html=True)
+    # Display the text
+    text_placeholder.markdown(f"<div class='text-box'>{animated_text}</div>", unsafe_allow_html=True)
 
     # Trigger automatic update of text when scramble is enabled
     if scramble_letters:
         for _ in range(100):
-            scrambled_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, True, scramble_chance, keep_first_last)
+            scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance, keep_first_last=keep_first_last)
             animated_text = ''.join([f"<span>{char}</span>" for char in scrambled_text])
             text_placeholder.markdown(f"<div class='text-box animated-text'>{animated_text}</div>", unsafe_allow_html=True)
             time.sleep(update_speed / 1000)
