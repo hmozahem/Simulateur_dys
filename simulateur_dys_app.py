@@ -2,40 +2,40 @@ import streamlit as st
 import random
 import time
 
-# Fonction pour inverser certaines lettres spécifiques
+# Function to invert specific letters
 def invert_letters(text):
     letter_map = {'b': 'd', 'd': 'b', 'p': 'q', 'q': 'p'}
     return ''.join([letter_map.get(c, c) for c in text])
 
-# Fonction pour omettre aléatoirement des lettres
+# Function to randomly omit letters
 def omit_random_letters(text, omit_prob=0.1):
     return ''.join([c if random.random() > omit_prob else '' for c in text])
 
-# Fonction pour varier la taille des caractères
+# Function to vary letter case
 def vary_case(text):
     return ''.join([c.upper() if random.random() > 0.5 else c.lower() for c in text])
 
-# Fonction pour inverser tout le texte (effet miroir)
+# Function to reverse the text (mirror effect)
 def mirror_text(text):
     return text[::-1]
 
-# Fonction pour brouiller les lettres à l'intérieur des mots (en gardant les premières et dernières lettres)
+# Function to scramble the middle letters of a word (preserving first and last if needed)
 def scramble_word(word, keep_first_last=False):
     if len(word) > 3 and keep_first_last:
         middle = list(word[1:-1])
         random.shuffle(middle)
-        return word[0] + ''.join(middle) + word[-1]
+        return word[0] + ''.join(middle) + word[-1]  # Keep first and last letter in place
     elif len(word) > 1:
         letters = list(word)
         random.shuffle(letters)
         return ''.join(letters)
     return word
 
-# Fonction pour brouiller partiellement le texte (seulement certains mots)
+# Function to scramble text
 def partial_scramble_text(text, scramble_chance=0.5, keep_first_last=False):
     return ' '.join([scramble_word(word, keep_first_last) if random.random() < scramble_chance else word for word in text.split()])
 
-# Fonction principale pour simuler la dyslexie
+# Function for static scrambling
 def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble, scramble_chance=0.5, keep_first_last=False):
     # Apply letter inversion
     if invert:
@@ -80,7 +80,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Add some styling for the text boxes and CSS transitions
+# Add some styling for the text boxes and smooth text transitions
 st.markdown(
     """
     <style>
@@ -88,15 +88,15 @@ st.markdown(
         border: 1px solid lightgray;
         padding: 10px;
         height: 200px;
-        transition: all 0.3s ease;
+        overflow: hidden;
     }
-    .animated-text {
-        animation: scramble 2s infinite;
+    .scrambled-text span {
+        display: inline-block;
+        transition: transform 0.3s ease, opacity 0.3s ease;
     }
-    @keyframes scramble {
-        0% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-        100% { transform: translateY(0); }
+    .scrambled-text span:hover {
+        transform: translateY(-5px);
+        opacity: 0.8;
     }
     </style>
     """, unsafe_allow_html=True
@@ -130,7 +130,7 @@ keep_first_last = st.checkbox("Garder les premières et dernières lettres stabl
 # Speed of update
 update_speed = st.slider("Vitesse de mise à jour (en millisecondes)", 500, 3000, 1000)
 
-# Enable/disable letter scrambling
+# Enable/disable dynamic letter scrambling
 scramble_letters = st.checkbox("Activer le brouillage des lettres (dynamique)", value=False)
 
 # Additional dyslexia effects
@@ -171,16 +171,24 @@ if italic:
 if underline:
     style += "text-decoration: underline;"
 
-# Default static scrambling (always apply when scramble_letters is off)
+# Static scrambling by default
 if user_input:
-    transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, False, scramble_chance, keep_first_last)
-    styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
-    text_placeholder.markdown(styled_text, unsafe_allow_html=True)
+    scrambled_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, False, scramble_chance, keep_first_last)
 
-    # If scramble is enabled, activate dynamic scrambling with CSS animation
+    # Wrap each letter in a span to apply transition effects
+    animated_text = ''.join([f"<span>{char}</span>" for char in scrambled_text])
+
     if scramble_letters:
-        for _ in range(100):  # Run the loop only if scrambling is enabled
-            transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, True, scramble_chance, keep_first_last)
-            styled_text = f"<div class='text-box animated-text' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
-            text_placeholder.markdown(styled_text, unsafe_allow_html=True)
+        # Add class for dynamic animation
+        text_placeholder.markdown(f"<div class='text-box'><div class='scrambled-text'>{animated_text}</div></div>", unsafe_allow_html=True)
+    else:
+        # Static scrambled text without animation
+        text_placeholder.markdown(f"<div class='text-box'>{animated_text}</div>", unsafe_allow_html=True)
+
+    # Trigger automatic update of text when scramble is enabled
+    if scramble_letters:
+        for _ in range(100):
+            scrambled_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, True, scramble_chance, keep_first_last)
+            animated_text = ''.join([f"<span>{char}</span>" for char in scrambled_text])
+            text_placeholder.markdown(f"<div class='text-box animated-text'>{animated_text}</div>", unsafe_allow_html=True)
             time.sleep(update_speed / 1000)
