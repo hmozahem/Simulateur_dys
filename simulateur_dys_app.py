@@ -137,8 +137,12 @@ if italic:
 if underline:
     style += "text-decoration: underline;"
 
-# Simulation et transformation du texte
+# Simulation automatique des lettres qui bougent
 if user_input:
-    transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option)
-    styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
-    text_placeholder.markdown(styled_text, unsafe_allow_html=True)
+    for _ in range(100):  # Limite de la boucle pour éviter une boucle infinie sur Streamlit Cloud
+        transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option)
+        styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
+        text_placeholder.markdown(styled_text, unsafe_allow_html=True)
+
+        # Délai pour l'effet de mouvement
+        time.sleep(update_speed / 1000)
