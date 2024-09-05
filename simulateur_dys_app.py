@@ -19,12 +19,16 @@ def vary_case(text):
 def mirror_text(text):
     return text[::-1]
 
-# Fonction pour brouiller les lettres à l'intérieur des mots
+# Fonction pour brouiller les lettres à l'intérieur des mots (en gardant les premières et dernières lettres)
 def scramble_word(word, keep_first_last=False):
-    if len(word) > 3:
-        middle = list(word[1:-1]) if keep_first_last else list(word)
+    if len(word) > 3 and keep_first_last:
+        middle = list(word[1:-1])  # Select the middle letters
         random.shuffle(middle)
-        return word[0] + ''.join(middle) + word[-1] if keep_first_last else ''.join(middle)
+        return word[0] + ''.join(middle) + word[-1]  # Keep first and last letter in place
+    elif len(word) > 1:
+        letters = list(word)
+        random.shuffle(letters)
+        return ''.join(letters)
     return word
 
 # Fonction pour brouiller partiellement le texte (seulement certains mots)
@@ -33,37 +37,34 @@ def partial_scramble_text(text, scramble_chance=0.5, keep_first_last=False):
 
 # Fonction principale pour simuler la dyslexie
 def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble, scramble_chance=0.5, keep_first_last=False):
-    def scramble_word(word):
-        if len(word) > 1:
-            letters = list(word)
-            random.shuffle(letters)
-            return ''.join(letters)
-        return word
-
+    # Simulate letter inversion
     if invert:
         text = invert_letters(text)
 
+    # Simulate random letter omissions
     if omit:
         text = omit_random_letters(text)
 
+    # Simulate case variation
     if vary:
         text = vary_case(text)
 
-    # Appliquer l'effet miroir si activé
+    # Simulate the mirror effect
     if mirror:
         text = mirror_text(text)
 
-    # Appliquer le brouillage partiel si activé
+    # Apply partial scrambling if enabled
     if scramble:
         text = partial_scramble_text(text, scramble_chance, keep_first_last)
 
-    scrambled_words = [scramble_word(word) for word in text.split()]
+    words = text.split()
 
-    # Ajuster le taux de suppression des espaces (réduit à 25 %) seulement si l'option "premières/dernières lettres stables" est désactivée
+    # Handle space removal while respecting the stable first/last letters
     if remove_spaces and not keep_first_last:
-        return ''.join([word + (' ' if random.random() < 0.75 else '') for word in scrambled_words])
+        # Join words with 75% chance of adding a space between them
+        return ''.join([word + (' ' if random.random() < 0.75 else '') for word in words])
     else:
-        return ' '.join(scrambled_words)
+        return ' '.join(words)  # Join words with normal spaces
 
 # Titre
 st.markdown("<h3>Simulateur de Dyslexie (version bêta)</h3>", unsafe_allow_html=True)
@@ -171,4 +172,3 @@ if user_input:
 
         # Délai pour l'effet de mouvement
         time.sleep(update_speed / 1000)
-
