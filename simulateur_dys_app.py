@@ -98,44 +98,6 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 
-# Add optional effects for oscillation and rotation
-oscillate_effect = st.checkbox("Ajouter l'effet d'oscillation des lettres", value=False)
-rotate_effect = st.checkbox("Ajouter l'effet de rotation des lettres", value=False)
-
-# Dynamic CSS for oscillation and rotation if enabled
-css_oscillation = """
-@keyframes oscillate {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
-    100% { transform: translateY(0); }
-}
-"""
-css_rotation = """
-@keyframes rotate {
-    0% { transform: rotate(0deg); }
-    50% { transform: rotate(5deg); }
-    100% { transform: rotate(0deg); }
-}
-"""
-
-# Apply selected effects dynamically based on user choice
-additional_css = ""
-if oscillate_effect:
-    additional_css += css_oscillation + """
-    .oscillating-text span {
-        animation: oscillate 1s infinite;
-    }
-    """
-if rotate_effect:
-    additional_css += css_rotation + """
-    .rotating-text span {
-        animation: rotate 2s infinite;
-    }
-    """
-
-# Inject the additional CSS into the page
-st.markdown(f"<style>{additional_css}</style>", unsafe_allow_html=True)
-
 # Two columns for original and transformed text
 col1, col2 = st.columns([1, 1])
 
@@ -204,15 +166,7 @@ if user_input:
     scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance)
 
     # Apply styles to the text
-    css_class = ""
-    if oscillate_effect:
-        css_class = "oscillating-text"
-    if rotate_effect:
-        css_class = "rotating-text"
-    if oscillate_effect and rotate_effect:
-        css_class = "oscillating-text rotating-text"
-
-    styled_text = f"<div class='text-box {css_class}' style='{style}'>{scrambled_text}</div>"
+    styled_text = f"<div class='text-box' style='{style}'>{scrambled_text}</div>"
 
     # Display the text
     text_placeholder.markdown(styled_text, unsafe_allow_html=True)
@@ -221,6 +175,6 @@ if user_input:
     if scramble_letters:
         for _ in range(100):
             scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance)
-            styled_text = f"<div class='text-box animated-text {css_class}' style='{style}'>{scrambled_text}</div>"
+            styled_text = f"<div class='text-box animated-text' style='{style}'>{scrambled_text}</div>"
             text_placeholder.markdown(styled_text, unsafe_allow_html=True)
             time.sleep(update_speed / 1000)
