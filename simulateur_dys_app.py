@@ -58,6 +58,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Ajout du texte supplémentaire après le disclaimer
+st.markdown(
+    "<div style='font-size: 12px; color: gray;'>Il y a plusieurs options présentes qui représentent des variantes de la dyslexie, mais elles ne sont pas forcément cumulatives.</div>",
+    unsafe_allow_html=True
+)
+
 # Texte discret pour "Développé par Hussein"
 st.markdown(
     "<div style='font-size: 10px; color: gray; text-align: right;'>Développé par Hussein (100% Handinamique)</div>",
@@ -109,7 +115,10 @@ with col5:
 font_choice = st.selectbox("Choisir la police (affecte le style de police du texte transformé)", ["Arial", "Baskerville"])
 
 # Vitesse de mise à jour
-update_speed = st.slider("Vitesse de mise à jour (en millisecondes, plus rapide si valeur basse)", 500, 2000, 1000)
+update_speed = st.slider("Vitesse de mise à jour (en millisecondes, plus rapide si valeur basse)", 1000, 3000, 2000)
+
+# Option pour activer ou désactiver les lettres qui bougent (désactivé par défaut)
+moving_letters = st.checkbox("Activer le mouvement des lettres", value=False)
 
 # Options pour simuler différentes formes de dyslexie avec descriptions
 col6, col7, col8, col9 = st.columns(4)
@@ -137,12 +146,13 @@ if italic:
 if underline:
     style += "text-decoration: underline;"
 
-# Simulation automatique des lettres qui bougent
+# Simulation automatique des lettres qui bougent si activée
 if user_input:
-    for _ in range(100):  # Limite de la boucle pour éviter une boucle infinie sur Streamlit Cloud
+    for _ in range(100 if moving_letters else 1):  # Boucle seulement si l'option est activée
         transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option)
         styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
         text_placeholder.markdown(styled_text, unsafe_allow_html=True)
 
         # Délai pour l'effet de mouvement
-        time.sleep(update_speed / 1000)
+        if moving_letters:
+            time.sleep(update_speed / 1000)
