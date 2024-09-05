@@ -124,6 +124,9 @@ scramble_letters = st.checkbox("Activer le brouillage des lettres (dynamique)", 
 # Scramble chance slider
 scramble_chance = st.slider("Pourcentage de mots brouillés", 0.0, 1.0, 0.05)
 
+# Option to keep the first and last letters stable
+keep_first_last = st.checkbox("Garder les premières et dernières lettres stables", value=False)
+
 # Speed of update
 update_speed = st.slider("Vitesse de mise à jour (en millisecondes)", 500, 3000, 1000)
 
