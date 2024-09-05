@@ -146,14 +146,14 @@ with col8:
 with col9:
     mirror_option = st.checkbox("Effet miroir (inverser tout le texte)", value=False)
 
-# Apply selected font styles
+# Apply selected font styles and CSS
 font_styles = {
     "Arial": "font-family: Arial, sans-serif;",
     "Baskerville": "font-family: Baskerville, serif;"
 }
 
 # Apply bold, italic, underline styles
-style = ""
+style = f"{font_styles[font_choice]}"
 if bold:
     style += "font-weight: bold;"
 if italic:
@@ -165,16 +165,16 @@ if underline:
 if user_input:
     scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance)
 
-    # Wrap each letter in a span to apply transition effects
-    animated_text = ''.join([f"<span>{char}</span>" for char in scrambled_text])
+    # Apply styles to the text
+    styled_text = f"<div class='text-box' style='{style}'>{scrambled_text}</div>"
 
     # Display the text
-    text_placeholder.markdown(f"<div class='text-box'>{animated_text}</div>", unsafe_allow_html=True)
+    text_placeholder.markdown(styled_text, unsafe_allow_html=True)
 
     # Trigger automatic update of text when scramble is enabled
     if scramble_letters:
         for _ in range(100):
             scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance)
-            animated_text = ''.join([f"<span>{char}</span>" for char in scrambled_text])
-            text_placeholder.markdown(f"<div class='text-box animated-text'>{animated_text}</div>", unsafe_allow_html=True)
+            styled_text = f"<div class='text-box animated-text' style='{style}'>{scrambled_text}</div>"
+            text_placeholder.markdown(styled_text, unsafe_allow_html=True)
             time.sleep(update_speed / 1000)
