@@ -19,8 +19,20 @@ def vary_case(text):
 def mirror_text(text):
     return text[::-1]
 
+# Fonction pour brouiller les lettres à l'intérieur des mots
+def scramble_word(word):
+    if len(word) > 3:
+        middle = list(word[1:-1])
+        random.shuffle(middle)
+        return word[0] + ''.join(middle) + word[-1]
+    return word
+
+# Fonction pour brouiller tout le texte
+def scramble_text(text):
+    return ' '.join([scramble_word(word) for word in text.split()])
+
 # Fonction principale pour simuler la dyslexie
-def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror):
+def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble):
     def scramble_word(word):
         if len(word) > 1:
             letters = list(word)
@@ -40,6 +52,10 @@ def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror):
     # Appliquer l'effet miroir si activé
     if mirror:
         text = mirror_text(text)
+
+    # Appliquer le brouillage si activé
+    if scramble:
+        text = scramble_text(text)
 
     scrambled_words = [scramble_word(word) for word in text.split()]
 
@@ -120,6 +136,9 @@ update_speed = st.slider("Vitesse de mise à jour (en millisecondes, plus rapide
 # Option pour activer ou désactiver les lettres qui bougent (désactivé par défaut)
 moving_letters = st.checkbox("Activer le mouvement des lettres", value=False)
 
+# Option pour activer ou désactiver l'effet de brouillage des lettres dans les mots (désactivé par défaut)
+scramble_letters = st.checkbox("Activer l'effet de brouillage des lettres dans les mots", value=False)
+
 # Options pour simuler différentes formes de dyslexie avec descriptions
 col6, col7, col8, col9 = st.columns(4)
 with col6:
@@ -149,7 +168,7 @@ if underline:
 # Simulation automatique des lettres qui bougent si activée
 if user_input:
     for _ in range(100 if moving_letters else 1):  # Boucle seulement si l'option est activée
-        transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option)
+        transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, scramble_letters)
         styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
         text_placeholder.markdown(styled_text, unsafe_allow_html=True)
 
