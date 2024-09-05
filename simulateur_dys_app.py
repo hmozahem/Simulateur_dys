@@ -65,7 +65,12 @@ def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble,
     else:
         return ' '.join(words)
 
-# Add custom CSS for smooth transition
+# Titre et disclaimer
+st.markdown("<h3>Simulateur de Dyslexie (version bêta)</h3>", unsafe_allow_html=True)
+st.markdown("<div style='font-size: 14px; color: gray;'>Ceci est une version expérimentale destinée à simuler certaines formes de dyslexie afin de fournir un aperçu non exhaustif. Il ne s'agit en aucun cas de la Dyslexie avec un grand D, mais plutôt d'une représentation de certaines de ses manifestations.</div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size: 10px; color: gray; text-align: right;'>Développé par Hussein (100% Handinamique)</div>", unsafe_allow_html=True)
+
+# Custom CSS for text animations and style
 st.markdown("""
     <style>
     .text-box {
