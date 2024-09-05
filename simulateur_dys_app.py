@@ -19,12 +19,12 @@ def vary_case(text):
 def mirror_text(text):
     return text[::-1]
 
-# Fonction pour brouiller les lettres à l'intérieur des mots (en gardant les premières et dernières lettres)
+# Fonction pour brouiller les lettres à l'intérieur des mots
 def scramble_word(word, keep_first_last=False):
     if len(word) > 3 and keep_first_last:
-        middle = list(word[1:-1])
+        middle = list(word[1:-1])  # Select the middle letters
         random.shuffle(middle)
-        return word[0] + ''.join(middle) + word[-1]
+        return word[0] + ''.join(middle) + word[-1]  # Keep first and last letter in place
     elif len(word) > 1:
         letters = list(word)
         random.shuffle(letters)
@@ -80,7 +80,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Add some styling for the text boxes and CSS transitions
+# Add some styling for the text boxes and smooth letter transitions
 st.markdown(
     """
     <style>
@@ -88,15 +88,14 @@ st.markdown(
         border: 1px solid lightgray;
         padding: 10px;
         height: 200px;
-        transition: all 0.3s ease;
     }
     .animated-text {
-        animation: scramble 2s infinite;
+        animation: scramble-text 1s infinite;
     }
-    @keyframes scramble {
-        0% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-        100% { transform: translateY(0); }
+    @keyframes scramble-text {
+        0% { opacity: 1; transform: translateY(0); }
+        50% { opacity: 0.8; transform: translateY(-3px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
     </style>
     """, unsafe_allow_html=True
@@ -130,7 +129,7 @@ keep_first_last = st.checkbox("Garder les premières et dernières lettres stabl
 # Speed of update
 update_speed = st.slider("Vitesse de mise à jour (en millisecondes)", 500, 3000, 1000)
 
-# Enable/disable letter scrambling
+# Enable/disable dynamic scrambling
 scramble_letters = st.checkbox("Activer le brouillage des lettres (dynamique)", value=False)
 
 # Additional dyslexia effects
@@ -171,13 +170,13 @@ if italic:
 if underline:
     style += "text-decoration: underline;"
 
-# Default static scrambling (always apply when scramble_letters is off)
+# Default static scrambling (always apply)
 if user_input:
     transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, False, scramble_chance, keep_first_last)
     styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
     text_placeholder.markdown(styled_text, unsafe_allow_html=True)
 
-    # If scramble is enabled, activate dynamic scrambling with CSS animation
+    # If scrambling is enabled, activate dynamic scrambling
     if scramble_letters:
         for _ in range(100):  # Run the loop only if scrambling is enabled
             transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, True, scramble_chance, keep_first_last)
