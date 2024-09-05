@@ -137,13 +137,8 @@ if italic:
 if underline:
     style += "text-decoration: underline;"
 
-# Simulation automatique avec une mise à jour régulière comme avant
+# Simulation et transformation du texte
 if user_input:
-    while True:
-        transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option)
-        styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
-        text_placeholder.markdown(styled_text, unsafe_allow_html=True)
-
-        # Mise à jour régulière avec le délai défini
-        time.sleep(update_speed / 1000)
-        st.experimental_rerun()  # Redémarrer le script pour continuer la mise à jour automatique
+    transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option)
+    styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
+    text_placeholder.markdown(styled_text, unsafe_allow_html=True)
