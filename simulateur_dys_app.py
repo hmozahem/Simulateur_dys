@@ -88,56 +88,15 @@ st.markdown(
     }
     .scrambled-text span {
         display: inline-block;
-        transition: transform 0.6s ease, opacity 0.6s ease, font-size 0.6s ease;
+        transition: transform 0.3s ease, opacity 0.3s ease;
     }
-    .scrambled-text span.move {
-        transform: translateX(1px) translateY(1px);
-        font-size: 105%;
-    }
-    .scrambled-text span.fade {
+    .scrambled-text span:hover {
+        transform: translateY(-5px);
         opacity: 0.8;
     }
     </style>
     """, unsafe_allow_html=True
 )
-
-# Add optional effects for subtle movements and opacity changes
-subtle_movement_effect = st.checkbox("Ajouter un mouvement subtil aux lettres", value=False)
-fade_effect = st.checkbox("Ajouter un effet de fondu aux lettres", value=False)
-
-# Dynamic CSS for subtle movement and fade if enabled
-css_movement = """
-@keyframes move {
-    0% { transform: translateX(0); }
-    50% { transform: translateX(2px) translateY(-2px); }
-    100% { transform: translateX(0); }
-}
-"""
-css_fade = """
-@keyframes fade {
-    0% { opacity: 1; }
-    50% { opacity: 0.8; }
-    100% { opacity: 1; }
-}
-"""
-
-# Apply selected effects dynamically based on user choice
-additional_css = ""
-if subtle_movement_effect:
-    additional_css += css_movement + """
-    .moving-text span {
-        animation: move 1s infinite alternate;
-    }
-    """
-if fade_effect:
-    additional_css += css_fade + """
-    .fading-text span {
-        animation: fade 1.5s infinite alternate;
-    }
-    """
-
-# Inject the additional CSS into the page
-st.markdown(f"<style>{additional_css}</style>", unsafe_allow_html=True)
 
 # Two columns for original and transformed text
 col1, col2 = st.columns([1, 1])
@@ -207,15 +166,7 @@ if user_input:
     scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance)
 
     # Apply styles to the text
-    css_class = ""
-    if subtle_movement_effect:
-        css_class = "moving-text"
-    if fade_effect:
-        css_class = "fading-text"
-    if subtle_movement_effect and fade_effect:
-        css_class = "moving-text fading-text"
-
-    styled_text = f"<div class='text-box {css_class}' style='{style}'>{scrambled_text}</div>"
+    styled_text = f"<div class='text-box' style='{style}'>{scrambled_text}</div>"
 
     # Display the text
     text_placeholder.markdown(styled_text, unsafe_allow_html=True)
@@ -224,6 +175,7 @@ if user_input:
     if scramble_letters:
         for _ in range(100):
             scrambled_text = simulate_dyslexia(user_input, remove_spaces=False, invert=invert_letters_option, omit=omit_letters_option, vary=vary_case_option, mirror=mirror_option, scramble=True, scramble_chance=scramble_chance)
-            styled_text = f"<div class='text-box animated-text {css_class}' style='{style}'>{scrambled_text}</div>"
+            styled_text = f"<div class='text-box animated-text' style='{style}'>{scrambled_text}</div>"
             text_placeholder.markdown(styled_text, unsafe_allow_html=True)
             time.sleep(update_speed / 1000)
+
