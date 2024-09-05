@@ -2,24 +2,24 @@ import streamlit as st
 import random
 import time
 
-# Fonction pour inverser certaines lettres spécifiques
+# Function to invert specific letters
 def invert_letters(text):
     letter_map = {'b': 'd', 'd': 'b', 'p': 'q', 'q': 'p'}
     return ''.join([letter_map.get(c, c) for c in text])
 
-# Fonction pour omettre aléatoirement des lettres
+# Function to randomly omit letters
 def omit_random_letters(text, omit_prob=0.1):
     return ''.join([c if random.random() > omit_prob else '' for c in text])
 
-# Fonction pour varier la taille des caractères
+# Function to vary letter case
 def vary_case(text):
     return ''.join([c.upper() if random.random() > 0.5 else c.lower() for c in text])
 
-# Fonction pour inverser tout le texte (effet miroir)
+# Function to reverse the text (mirror effect)
 def mirror_text(text):
     return text[::-1]
 
-# Fonction pour brouiller les lettres à l'intérieur des mots (en gardant les premières et dernières lettres)
+# Function to scramble the middle letters of a word (preserving first and last if needed)
 def scramble_word(word, keep_first_last=False):
     if len(word) > 3 and keep_first_last:
         middle = list(word[1:-1])  # Select the middle letters
@@ -31,25 +31,25 @@ def scramble_word(word, keep_first_last=False):
         return ''.join(letters)
     return word
 
-# Fonction pour brouiller partiellement le texte (seulement certains mots)
+# Function to scramble some words in the text based on scramble_chance
 def partial_scramble_text(text, scramble_chance=0.5, keep_first_last=False):
     return ' '.join([scramble_word(word, keep_first_last) if random.random() < scramble_chance else word for word in text.split()])
 
-# Fonction principale pour simuler la dyslexie
+# Main function to simulate dyslexia
 def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble, scramble_chance=0.5, keep_first_last=False):
-    # Simulate letter inversion
+    # Apply letter inversion
     if invert:
         text = invert_letters(text)
 
-    # Simulate random letter omissions
+    # Apply letter omission
     if omit:
         text = omit_random_letters(text)
 
-    # Simulate case variation
+    # Apply case variation
     if vary:
         text = vary_case(text)
 
-    # Simulate the mirror effect
+    # Apply the mirror effect
     if mirror:
         text = mirror_text(text)
 
@@ -59,29 +59,28 @@ def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble,
 
     words = text.split()
 
-    # Handle space removal while respecting the stable first/last letters
-    if remove_spaces and not keep_first_last:
-        # Join words with 75% chance of adding a space between them
+    # Handle space removal after scrambling
+    if remove_spaces:
         return ''.join([word + (' ' if random.random() < 0.75 else '') for word in words])
     else:
-        return ' '.join(words)  # Join words with normal spaces
+        return ' '.join(words)
 
-# Titre
+# Streamlit UI
 st.markdown("<h3>Simulateur de Dyslexie (version bêta)</h3>", unsafe_allow_html=True)
 
-# Disclaimer mis à jour
+# Disclaimer
 st.markdown(
-    "<div style='font-size: 14px; color: gray;'>Ceci est une version expérimentale, destinée à simuler certaines formes de dyslexie afin de fournir un aperçu non exhaustif. Il ne s'agit en aucun cas de la Dyslexie avec un grand D, mais plutôt d'une représentation de certaines de ses manifestations.</div>",
+    "<div style='font-size: 14px; color: gray;'>Ceci est une version expérimentale destinée à simuler certaines formes de dyslexie afin de fournir un aperçu non exhaustif. Il ne s'agit en aucun cas de la Dyslexie avec un grand D, mais plutôt d'une représentation de certaines de ses manifestations.</div>",
     unsafe_allow_html=True
 )
 
-# Texte discret pour "Développé par Hussein"
+# Small credit text
 st.markdown(
     "<div style='font-size: 10px; color: gray; text-align: right;'>Développé par Hussein (100% Handinamique)</div>",
     unsafe_allow_html=True
 )
 
-# Ajout du CSS pour les cadres fixes et des infobulles
+# Add some styling for the text boxes
 st.markdown(
     """
     <style>
@@ -94,38 +93,38 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 
-# Mise en place des colonnes pour le texte original et le texte transformé
+# Two columns for original and transformed text
 col1, col2 = st.columns([1, 1])
 
-# Cadre pour le texte original à gauche
+# Text input on the left
 with col1:
     st.subheader("Texte original")
     user_input = st.text_area("Entrez le texte ici", height=200, key="original_text", label_visibility="collapsed")
 
-# Cadre pour le texte transformé à droite
+# Text output on the right
 with col2:
     st.subheader("Texte transformé")
     text_placeholder = st.empty()
 
-# Réglages placés en bas
+# Control settings
 st.subheader("Réglages")
 
-# Option de suppression des espaces
+# Space removal option
 remove_spaces = st.checkbox("Activer la suppression des espaces", value=False)
 
-# Scramble Chance slider
+# Scramble chance slider
 scramble_chance = st.slider("Pourcentage de mots brouillés", 0.0, 1.0, 0.5)
 
-# Option pour maintenir les premières et dernières lettres des mots stables
+# Option to keep the first and last letters stable
 keep_first_last = st.checkbox("Garder les premières et dernières lettres stables", value=False)
 
-# Vitesse de mise à jour
+# Speed of update
 update_speed = st.slider("Vitesse de mise à jour (en millisecondes)", 500, 3000, 1000)
 
-# Option pour activer ou désactiver le brouillage partiel (désactivé par défaut)
+# Enable/disable letter scrambling
 scramble_letters = st.checkbox("Activer le brouillage des lettres", value=False)
 
-# Options de style avec descriptions dans les infobulles
+# Additional dyslexia effects
 col3, col4, col5 = st.columns(3)
 with col3:
     bold = st.checkbox("Gras (rend le texte en gras)", value=False)
@@ -134,10 +133,10 @@ with col4:
 with col5:
     underline = st.checkbox("Souligné (souligner le texte)")
 
-# Option de sélection de police
+# Font style option
 font_choice = st.selectbox("Choisir la police (affecte le style de police du texte transformé)", ["Arial", "Baskerville"])
 
-# Options pour simuler différentes formes de dyslexie avec descriptions
+# Dyslexia effects options
 col6, col7, col8, col9 = st.columns(4)
 with col6:
     invert_letters_option = st.checkbox("Inverser lettres (b ↔ d, p ↔ q)", value=False)
@@ -148,13 +147,13 @@ with col8:
 with col9:
     mirror_option = st.checkbox("Effet miroir (inverser tout le texte)", value=False)
 
-# Appliquer la police et les styles sélectionnés via HTML et CSS
+# Apply selected font styles
 font_styles = {
     "Arial": "font-family: Arial, sans-serif;",
     "Baskerville": "font-family: Baskerville, serif;"
 }
 
-# Appliquer les styles (gras, italique, souligné)
+# Apply bold, italic, underline styles
 style = ""
 if bold:
     style += "font-weight: bold;"
@@ -163,12 +162,10 @@ if italic:
 if underline:
     style += "text-decoration: underline;"
 
-# Simulation automatique des lettres qui bougent si activée
+# Run the dyslexia simulation and display the transformed text
 if user_input:
-    for _ in range(100 if scramble_letters else 1):  # Boucle seulement si l'option est activée
+    for _ in range(100 if scramble_letters else 1):  # Run the loop only if scrambling is enabled
         transformed_text = simulate_dyslexia(user_input, remove_spaces, invert_letters_option, omit_letters_option, vary_case_option, mirror_option, scramble_letters, scramble_chance, keep_first_last)
         styled_text = f"<div class='text-box' style='{font_styles[font_choice]} {style};'>{transformed_text}</div>"
         text_placeholder.markdown(styled_text, unsafe_allow_html=True)
-
-        # Délai pour l'effet de mouvement
         time.sleep(update_speed / 1000)
