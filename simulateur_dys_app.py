@@ -59,20 +59,14 @@ def simulate_dyslexia(text, remove_spaces, invert, omit, vary, mirror, scramble,
 
     scrambled_words = [scramble_word(word) for word in text.split()]
 
-    # Ajuster le taux de suppression des espaces (réduit à 25 %)
-    if remove_spaces:
+    # Ajuster le taux de suppression des espaces (réduit à 25 %) seulement si l'option "premières/dernières lettres stables" est désactivée
+    if remove_spaces and not keep_first_last:
         return ''.join([word + (' ' if random.random() < 0.75 else '') for word in scrambled_words])
     else:
         return ' '.join(scrambled_words)
 
 # Titre
 st.markdown("<h3>Simulateur de Dyslexie (version bêta)</h3>", unsafe_allow_html=True)
-
-# Introduction plus grande
-st.markdown(
-    "<div style='font-size: 20px; color: black;'>Il y a plusieurs options présentes qui représentent des variantes de la dyslexie, mais elles ne sont pas forcément cumulatives.</div>",
-    unsafe_allow_html=True
-)
 
 # Disclaimer mis à jour
 st.markdown(
@@ -177,3 +171,4 @@ if user_input:
 
         # Délai pour l'effet de mouvement
         time.sleep(update_speed / 1000)
+
