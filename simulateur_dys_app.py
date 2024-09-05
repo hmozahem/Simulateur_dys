@@ -102,10 +102,10 @@ st.markdown(
 # Mise en place des colonnes pour le texte original et le texte transformé
 col1, col2 = st.columns([1, 1])
 
-# Cadre pour le texte original à gauche
+# Cadre pour le texte original à gauche, avec proper label to avoid empty value error
 with col1:
     st.subheader("Texte original")
-    user_input = st.text_area("", height=200, key="original_text", label_visibility="collapsed")
+    user_input = st.text_area("Entrez le texte ici", height=200, key="original_text", label_visibility="collapsed")
 
 # Cadre pour le texte transformé à droite
 with col2:
